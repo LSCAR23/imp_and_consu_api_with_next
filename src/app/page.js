@@ -5,6 +5,7 @@ import PostList from '../components/PostList';
 import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
+import Pagination from '../components/Pagination';
 import { fetchPosts, createPost, updatePost } from '../lib/api';
 
 export default function Home() {
@@ -13,12 +14,14 @@ export default function Home() {
     const [error, setError] = useState(null);
     const [toastMessage, setToastMessage] = useState(null);
     const [toastType, setToastType] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(10);
 
     useEffect(() => {
         const loadPosts = async () => {
             try {
                 const data = await fetchPosts();
-                setPosts(data.slice(0, 10));
+                setPosts(data); // Cargar todas las publicaciones
             } catch (err) {
                 setError('Error al cargar las publicaciones.');
                 setToastMessage('Error al cargar las publicaciones'); 
@@ -55,6 +58,14 @@ export default function Home() {
         }
     };
 
+    // Obtener los posts actuales
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+    // Cambiar de página
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     return (
         <div className="container mx-auto p-4" style={{ color: 'var(--foreground)', backgroundColor: 'var(--background)' }}>
             <h1 className="text-3xl font-bold mb-6 text-center text-white">Publicaciones</h1>
@@ -64,8 +75,15 @@ export default function Home() {
             <CreatePostForm onCreate={handleCreatePost} />
 
             <PostList
-                posts={posts}
+                posts={currentPosts}
                 onEdit={(post) => setEditingPost(post)}
+            />
+
+            <Pagination
+                postsPerPage={postsPerPage}
+                totalPosts={posts.length}
+                paginate={paginate}
+                currentPage={currentPage}
             />
 
             {editingPost && (
