@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 import PostList from '../components/PostList';
 import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
+import ToastMessage from '../components/ToastMessage';
 import { fetchPosts, createPost, updatePost } from '../lib/api';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
     const [editingPost, setEditingPost] = useState(null);
     const [error, setError] = useState(null);
+    const [toastMessage, setToastMessage] = useState(null);
+    const [toastType, setToastType] = useState(null);
 
     useEffect(() => {
         const loadPosts = async () => {
@@ -18,6 +21,8 @@ export default function Home() {
                 setPosts(data.slice(0, 10));
             } catch (err) {
                 setError('Error al cargar las publicaciones.');
+                setToastMessage('Error al cargar las publicaciones'); 
+                setToastType('error');
             }
         };
         loadPosts();
@@ -27,8 +32,12 @@ export default function Home() {
         try {
             const createdPost = await createPost(newPost);
             setPosts([createdPost, ...posts]);
+            setToastMessage('Publicación creada exitosamente');
+            setToastType('success');
         } catch (err) {
             setError('Error al crear la publicación.');
+            setToastMessage('Error al crear la publicación');
+            setToastType('error');
         }
     };
 
@@ -37,8 +46,12 @@ export default function Home() {
             const savedPost = await updatePost(updatedPost);
             setPosts(posts.map((post) => (post.id === savedPost.id ? savedPost : post)));
             setEditingPost(null);
+            setToastMessage('Publicación actualizada exitosamente');
+            setToastType('success');
         } catch (err) {
             setError('Error al actualizar la publicación.');
+            setToastMessage('Error al actualizar la publicación');
+            setToastType('error');
         }
     };
 
@@ -71,6 +84,7 @@ export default function Home() {
                     </div>
                 </div>
             )}
+            {toastMessage && <ToastMessage message={toastMessage} type={toastType} onClose={() => setToastMessage(null)} />}
         </div>
     );
 }
