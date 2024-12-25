@@ -1,5 +1,5 @@
-##Descripcción del proyecto
-Este es un pequeño proyecto de Next js que tiene como funcion principal ejemplificar el consumo de un API con esta tecnología, mediante el manejo de "publicaciones".
+# Descripcción del proyecto
+Este es un pequeño proyecto de Next.js que tiene como funcion principal ejemplificar el consumo de un API con esta tecnología, mediante el manejo de "publicaciones".
 
 ## Instrucciones de instalación
 
