@@ -18,7 +18,9 @@ export default function Home() {
     const [toastType, setToastType] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage] = useState(10);
-
+    const [editedPostId, setEditedPostId] = useState(null);
+    const [deletingPostId, setDeletingPostId] = useState(null);
+    
     useEffect(() => {
         const loadPosts = async () => {
             setLoading(true);
@@ -53,6 +55,8 @@ export default function Home() {
         try {
             const savedPost = await updatePost(updatedPost);
             setPosts(posts.map((post) => (post.id === savedPost.id ? savedPost : post)));
+            setEditedPostId(updatedPost.id); 
+            setTimeout(() => setEditedPostId(null), 800);
             setEditingPost(null);
             setToastMessage('Publicación actualizada exitosamente');
             setToastType('success');
@@ -62,18 +66,24 @@ export default function Home() {
             setToastType('error');
         }
     };
+    
 
     const handleDeletePost = async (postId) => {
-        try {
-            await deletePost(postId);
-            setPosts(posts.filter((post) => post.id !== postId));
-            setToastMessage('Publicación eliminada exitosamente');
-            setToastType('success');
-        } catch (err) {
-            setError('Error al eliminar la publicación.');
-            setToastMessage('Error al eliminar la publicación');
-            setToastType('error');
-        }
+        setDeletingPostId(postId);
+        setTimeout(async () => {
+            try {
+                await deletePost(postId);
+                setPosts(posts.filter((post) => post.id !== postId));
+                setToastMessage('Publicación eliminada exitosamente');
+                setToastType('success');
+            } catch (err) {
+                setError('Error al eliminar la publicación.');
+                setToastMessage('Error al eliminar la publicación');
+                setToastType('error');
+            } finally {
+                setDeletingPostId(null);
+            }
+        }, 300);
     };
 
     const indexOfLastPost = currentPage * postsPerPage;
@@ -98,6 +108,8 @@ export default function Home() {
                         posts={currentPosts}
                         onEdit={(post) => setEditingPost(post)}
                         onDelete={(postId) => handleDeletePost(postId)}
+                        editedPostId={editedPostId}
+                        deletingPostId={deletingPostId}
                     />
 
                     <Pagination
