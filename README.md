@@ -14,7 +14,7 @@ Este es un pequeño proyecto de Next.js que tiene como funcion principal ejempli
    npm install
    ```
 3. Crea un archivo .env en la raíz del proyecto y define las variables de entorno:
-   ```bash
+   ```env
    NEXT_PUBLIC_API_URL=https://api.example.com
    ```
    
