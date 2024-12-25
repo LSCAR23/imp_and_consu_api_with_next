@@ -7,12 +7,12 @@ export default function Pagination({ postsPerPage, totalPosts, paginate, current
 
     return (
         <nav className="my-4">
-            <ul className="flex justify-center space-x-2">
+            <ul className="flex flex-wrap justify-center space-x-2">
                 {pageNumbers.map(number => (
                     <li key={number} className="inline-block">
                         <button
                             onClick={() => paginate(number)}
-                            className={`px-4 py-2 rounded border-2 ${currentPage === number ? 'bg-violet-500 text-white border-violet-500' : 'bg-black text-violet-500 border-violet-500'} hover:bg-violet-500 hover:text-black transition-colors duration-300`}
+                            className={`px-2 py-1 md:px-4 md:py-2 rounded border-2 ${currentPage === number ? 'bg-violet-500 text-white border-violet-500' : 'bg-black text-violet-500 border-violet-500'} hover:bg-violet-500 hover:text-black transition-colors duration-300`}
                         >
                             {number}
                         </button>
