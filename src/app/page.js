@@ -6,8 +6,9 @@ import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
 import Pagination from '../components/Pagination';
-import Spinner from '../components/Spinner';
+import Spinner from '../components/SkeletonPosts';
 import { fetchPosts, createPost, updatePost, deletePost } from '../lib/api';
+import SkeletonPosts from '../components/SkeletonPosts';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
@@ -99,12 +100,12 @@ export default function Home() {
 
             {error && <p className="text-red-500">{error}</p>}
 
+            <CreatePostForm onCreate={handleCreatePost} />
+
             {loading ? (
-                <Spinner />
+                <SkeletonPosts />
             ) : (
                 <>
-                    <CreatePostForm onCreate={handleCreatePost} />
-
                     <PostList
                         posts={currentPosts}
                         onEdit={(post) => setEditingPost(post)}
