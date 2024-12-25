@@ -37,4 +37,4 @@ Este es un pequeño proyecto de Next.js que tiene como funcion principal ejempli
 
 ## Mejoras
 
-- Se añidio un boton de para la eliminación de los post.
+- Se añadio un boton de para la eliminación de los post.
