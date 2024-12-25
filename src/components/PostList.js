@@ -1,4 +1,4 @@
-export default function PostList({ posts, onEdit }) {
+export default function PostList({ posts, onEdit, onDelete }) {
     return (
         <ul className="space-y-4">
             {posts.map((post) => (
@@ -7,9 +7,15 @@ export default function PostList({ posts, onEdit }) {
                     <p>{post.body}</p>
                     <button
                         onClick={() => onEdit(post)}
-                        className="bg-violet-500 text-white px-4 py-2 rounded mt-2 hover:bg-violet-600 transition-colors duration-300"
+                        className="bg-violet-500 text-white px-4 py-2 rounded mt-2 hover:bg-violet-600 transition-colors duration-300 mr-2"
                     >
                         Editar
+                    </button>
+                    <button
+                        onClick={() => onDelete(post.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded mt-2 hover:bg-red-600 transition-colors duration-300"
+                    >
+                        Eliminar
                     </button>
                 </li>
             ))}

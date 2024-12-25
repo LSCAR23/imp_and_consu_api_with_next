@@ -6,7 +6,7 @@ import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
 import Pagination from '../components/Pagination';
-import { fetchPosts, createPost, updatePost } from '../lib/api';
+import { fetchPosts, createPost, updatePost, deletePost } from '../lib/api';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
@@ -58,6 +58,19 @@ export default function Home() {
         }
     };
 
+    const handleDeletePost = async (postId) => {
+        try {
+            await deletePost(postId);
+            setPosts(posts.filter((post) => post.id !== postId));
+            setToastMessage('Publicación eliminada exitosamente');
+            setToastType('success');
+        } catch (err) {
+            setError('Error al eliminar la publicación.');
+            setToastMessage('Error al eliminar la publicación');
+            setToastType('error');
+        }
+    };
+
     // Obtener los posts actuales
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -77,6 +90,7 @@ export default function Home() {
             <PostList
                 posts={currentPosts}
                 onEdit={(post) => setEditingPost(post)}
+                onDelete={(postId) => handleDeletePost(postId)}
             />
 
             <Pagination
