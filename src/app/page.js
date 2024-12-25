@@ -6,10 +6,12 @@ import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
 import Pagination from '../components/Pagination';
+import Spinner from '../components/Spinner';
 import { fetchPosts, createPost, updatePost, deletePost } from '../lib/api';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
     const [error, setError] = useState(null);
     const [toastMessage, setToastMessage] = useState(null);
@@ -19,6 +21,7 @@ export default function Home() {
 
     useEffect(() => {
         const loadPosts = async () => {
+            setLoading(true);
             try {
                 const data = await fetchPosts();
                 setPosts(data); // Cargar todas las publicaciones
@@ -26,6 +29,8 @@ export default function Home() {
                 setError('Error al cargar las publicaciones.');
                 setToastMessage('Error al cargar las publicaciones'); 
                 setToastType('error');
+            } finally {
+                setLoading(false);
             }
         };
         loadPosts();
@@ -71,12 +76,10 @@ export default function Home() {
         }
     };
 
-    // Obtener los posts actuales
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
-    // Cambiar de página
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
@@ -85,20 +88,26 @@ export default function Home() {
 
             {error && <p className="text-red-500">{error}</p>}
 
-            <CreatePostForm onCreate={handleCreatePost} />
+            {loading ? (
+                <Spinner />
+            ) : (
+                <>
+                    <CreatePostForm onCreate={handleCreatePost} />
 
-            <PostList
-                posts={currentPosts}
-                onEdit={(post) => setEditingPost(post)}
-                onDelete={(postId) => handleDeletePost(postId)}
-            />
+                    <PostList
+                        posts={currentPosts}
+                        onEdit={(post) => setEditingPost(post)}
+                        onDelete={(postId) => handleDeletePost(postId)}
+                    />
 
-            <Pagination
-                postsPerPage={postsPerPage}
-                totalPosts={posts.length}
-                paginate={paginate}
-                currentPage={currentPage}
-            />
+                    <Pagination
+                        postsPerPage={postsPerPage}
+                        totalPosts={posts.length}
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                </>
+            )}
 
             {editingPost && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
