@@ -20,6 +20,12 @@ export default function Home() {
     const [postsPerPage] = useState(10);
     const [editedPostId, setEditedPostId] = useState(null);
     const [deletingPostId, setDeletingPostId] = useState(null);
+
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
     
     useEffect(() => {
         const loadPosts = async () => {
@@ -86,11 +92,6 @@ export default function Home() {
         }, 300);
     };
 
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <div className="container mx-auto p-4" style={{ color: 'var(--foreground)', backgroundColor: 'var(--background)' }}>

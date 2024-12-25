@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export const fetchPosts = async () => {
     const response = await axios.get(API_URL);
