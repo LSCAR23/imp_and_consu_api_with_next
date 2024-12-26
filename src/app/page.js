@@ -6,7 +6,6 @@ import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
 import Pagination from '../components/Pagination';
-import Spinner from '../components/SkeletonPosts';
 import { fetchPosts, createPost, updatePost, deletePost } from '../lib/api';
 import SkeletonPosts from '../components/SkeletonPosts';
 
@@ -14,7 +13,6 @@ export default function Home() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
-    const [error, setError] = useState(null);
     const [toastMessage, setToastMessage] = useState(null);
     const [toastType, setToastType] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +33,6 @@ export default function Home() {
                 const data = await fetchPosts();
                 setPosts(data); // Cargar todas las publicaciones
             } catch (err) {
-                setError('Error al cargar las publicaciones.');
                 setToastMessage('Error al cargar las publicaciones'); 
                 setToastType('error');
             } finally {
@@ -52,7 +49,6 @@ export default function Home() {
             setToastMessage('Publicación creada exitosamente');
             setToastType('success');
         } catch (err) {
-            setError('Error al crear la publicación.');
             setToastMessage('Error al crear la publicación');
             setToastType('error');
         }
@@ -68,7 +64,6 @@ export default function Home() {
             setToastMessage('Publicación actualizada exitosamente');
             setToastType('success');
         } catch (err) {
-            setError('Error al actualizar la publicación.');
             setToastMessage('Error al actualizar la publicación');
             setToastType('error');
         }
@@ -84,7 +79,6 @@ export default function Home() {
                 setToastMessage('Publicación eliminada exitosamente');
                 setToastType('success');
             } catch (err) {
-                setError('Error al eliminar la publicación.');
                 setToastMessage('Error al eliminar la publicación');
                 setToastType('error');
             } finally {
@@ -97,8 +91,6 @@ export default function Home() {
     return (
         <div className="container mx-auto p-4" style={{ color: 'var(--foreground)', backgroundColor: 'var(--background)' }}>
             <h1 className="text-3xl font-bold mb-6 text-center text-white">Publicaciones</h1>
-
-            {error && <p className="text-red-500">{error}</p>}
 
             <CreatePostForm onCreate={handleCreatePost} />
 
