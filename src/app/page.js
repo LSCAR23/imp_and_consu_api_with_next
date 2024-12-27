@@ -6,7 +6,7 @@ import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
 import Pagination from '../components/Pagination';
-import { fetchPosts, createPost, updatePost, deletePost } from '../lib/api';
+import { fetchPosts, createPost, updatePost, deletePost } from '../lib/endPoints';
 import SkeletonPosts from '../components/SkeletonPosts';
 
 export default function Home() {
