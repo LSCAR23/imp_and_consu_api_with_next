@@ -14,10 +14,25 @@ export async function GET() {
 export async function POST(req) {
     try {
         const body = await req.json();
-        const newPost = await prisma.post.create({ data: body });
+
+        const { userId, title, body: postBody } = body;
+
+        if (!userId) {
+            return new Response(JSON.stringify({ error: "El userId es obligatorio" }), { status: 400 });
+        }
+
+        const newPost = await prisma.post.create({
+            data: {
+                title,
+                body: postBody,
+                userId,
+            },
+        });
+
         return new Response(JSON.stringify(newPost), { status: 201 });
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Error al crear el post' }), { status: 500 });
+        console.error("Error al crear el post:", error);
+        return new Response(JSON.stringify({ error: "Error al crear el post" }), { status: 500 });
     }
 }
 

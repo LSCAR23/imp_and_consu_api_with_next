@@ -9,8 +9,11 @@ import Pagination from '../../components/Pagination';
 import Spinner from '../../components/Spinner';
 import { fetchPosts, createPost, updatePost, deletePost } from '../../lib/clientAPI_posts';
 import SkeletonPosts from '../../components/SkeletonPosts';
+import useUser from '../hooks/useUser';
+
 
 export default function PostsPage() {
+    const { user, loading: loadingUser } = useUser();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingCreation, setLoadingCreation] = useState(false);
@@ -46,20 +49,29 @@ export default function PostsPage() {
     }, []);
 
     const handleCreatePost = async (newPost) => {
+        if (loadingUser || !user) {
+            setToastMessage('Usuario no autenticado');
+            setToastType('error');
+            return;
+        }
+
         setLoadingCreation(true);
         try {
-            const createdPost = await createPost(newPost);
+            const postWithUserId = { ...newPost, userId: user.id };
+
+            const createdPost = await createPost(postWithUserId);
             setPosts([createdPost, ...posts]);
             setNewPostId(createdPost.id);
             setToastMessage('Publicación creada exitosamente');
             setToastType('success');
-            setTimeout(() => { setNewPostId(null); }, 1000);
+            setTimeout(() => {
+                setNewPostId(null);
+            }, 1000);
         } catch (err) {
-            setToastMessage('Error al crear la publicación');
+            setToastMessage(err.message || 'Error al crear la publicación');
             setToastType('error');
         } finally {
             setLoadingCreation(false);
-
         }
     };
 

@@ -14,11 +14,14 @@ export async function fetchPosts() {
 export async function createPost(post) {
     try {
         const res = await axios.post(`${API_URL}/posts`, post, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
         });
         return res.data;
     } catch (error) {
-        throw new Error('Error al crear la publicación');
+        if (error.response && error.response.data) {
+            throw new Error(error.response.data.error || "Error desconocido al crear la publicación");
+        }
+        throw new Error("Error de conexión al servidor");
     }
 }
 
