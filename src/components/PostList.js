@@ -1,10 +1,10 @@
 import './custom_styles/post.css'
 
-export default function PostList({ posts, onEdit, onDelete, deletingPostId, editedPostId }) {
+export default function PostList({ posts, onEdit, onDelete, deletingPostId, editedPostId, newPostId}) {
     return (
         <ul className="space-y-4">
             {posts.map((post) => (
-                <li key={posts.indexOf(post)+1} className={`border border-violet-500 p-4 rounded-lg shadow-sm bg-black text-white transition-all duration-300 ${ deletingPostId === post.id ? 'fade-out' : editedPostId === post.id ? 'flash' : '' }`}>
+                <li key={posts.indexOf(post)+1} className={`border border-violet-500 p-4 rounded-lg shadow-sm bg-black text-white transition-all duration-300 ${ deletingPostId === post.id ? 'fade-out' : editedPostId === post.id ? 'flash' : newPostId === post.id ? 'fade-in' : ''}`}>
                     <h2 className="text-xl font-bold mb-2">{post.title}</h2>
                     <p>{post.body}</p>
                     <button

@@ -21,19 +21,6 @@ export async function POST(req) {
     }
 }
 
-export async function PATCH(req, { params }) {
-    try {
-        const body = await req.json();
-        const updatedPost = await prisma.post.update({
-            where: { id: parseInt(params.id) },
-            data: body,
-        });
-        return new Response(JSON.stringify(updatedPost), { status: 200 });
-    } catch (error) {
-        return new Response(JSON.stringify({ error: 'Error al actualizar el post' }), { status: 500 });
-    }
-}
-
 export async function DELETE(req) {
     try {
         const { id } = await req.json();

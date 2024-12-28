@@ -6,12 +6,15 @@ import CreatePostForm from '../components/CreatePostForm';
 import EditPostForm from '../components/EditPostForm';
 import ToastMessage from '../components/ToastMessage';
 import Pagination from '../components/Pagination';
-import { fetchPosts, createPost, updatePost, deletePost } from '../lib/endPoints';
+import Spinner from '../components/Spinner';
+import { fetchPosts, createPost, updatePost, deletePost } from '../lib/clientAPI';
 import SkeletonPosts from '../components/SkeletonPosts';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingCreation, setLoadingCreation] = useState(false);
+    const [loadingPostId, setLoadingPostId] = useState(null);
     const [editingPost, setEditingPost] = useState(null);
     const [toastMessage, setToastMessage] = useState(null);
     const [toastType, setToastType] = useState(null);
@@ -19,13 +22,13 @@ export default function Home() {
     const [postsPerPage] = useState(10);
     const [editedPostId, setEditedPostId] = useState(null);
     const [deletingPostId, setDeletingPostId] = useState(null);
-
+    const [newPostId, setNewPostId] = useState(null);
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-    
+
     useEffect(() => {
         const loadPosts = async () => {
             setLoading(true);
@@ -33,7 +36,7 @@ export default function Home() {
                 const data = await fetchPosts();
                 setPosts(data); // Cargar todas las publicaciones
             } catch (err) {
-                setToastMessage('Error al cargar las publicaciones'); 
+                setToastMessage('Error al cargar las publicaciones');
                 setToastType('error');
             } finally {
                 setLoading(false);
@@ -43,32 +46,40 @@ export default function Home() {
     }, []);
 
     const handleCreatePost = async (newPost) => {
+        setLoadingCreation(true);
         try {
             const createdPost = await createPost(newPost);
             setPosts([createdPost, ...posts]);
+            setNewPostId(createdPost.id);
             setToastMessage('Publicación creada exitosamente');
             setToastType('success');
+            setTimeout(() => { setNewPostId(null); }, 1000);
         } catch (err) {
             setToastMessage('Error al crear la publicación');
             setToastType('error');
+        } finally {
+            setLoadingCreation(false);
+
         }
     };
 
     const handleUpdatePost = async (updatedPost) => {
+        setLoadingPostId(updatedPost.id);
         try {
             const savedPost = await updatePost(updatedPost);
             setPosts(posts.map((post) => (post.id === savedPost.id ? savedPost : post)));
-            setEditedPostId(updatedPost.id); 
+            setEditedPostId(updatedPost.id);
             setTimeout(() => setEditedPostId(null), 800);
             setEditingPost(null);
             setToastMessage('Publicación actualizada exitosamente');
             setToastType('success');
-        } catch (err) {
+        } catch {
             setToastMessage('Error al actualizar la publicación');
             setToastType('error');
+        } finally {
+            setLoadingPostId(null);
         }
     };
-    
 
     const handleDeletePost = async (postId) => {
         setDeletingPostId(postId);
@@ -91,7 +102,10 @@ export default function Home() {
     return (
         <div className="container mx-auto p-4" style={{ color: 'var(--foreground)', backgroundColor: 'var(--background)' }}>
             <h1 className="text-3xl font-bold mb-6 text-center text-white">Publicaciones</h1>
-
+            {loadingCreation && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                <Spinner label="Publicando nuevo post..." />
+            </div>
+            }
             <CreatePostForm onCreate={handleCreatePost} />
 
             {loading ? (
@@ -104,6 +118,7 @@ export default function Home() {
                         onDelete={(postId) => handleDeletePost(postId)}
                         editedPostId={editedPostId}
                         deletingPostId={deletingPostId}
+                        newPostId={newPostId}
                     />
 
                     <Pagination
@@ -128,6 +143,11 @@ export default function Home() {
                             post={editingPost}
                             onSave={handleUpdatePost}
                         />
+                        {loadingPostId === editingPost.id && (
+                            <div className="flex justify-center items-center mt-4">
+                                <Spinner label="Actualizando..." />
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

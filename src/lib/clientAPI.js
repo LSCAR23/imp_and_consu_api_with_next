@@ -25,7 +25,7 @@ export async function createPost(post) {
 
 export async function updatePost(post) {
     try {
-        const res = await axios.patch(`/api/posts/${post.id}`, post, {
+        const res = await axios.patch(`${API_URL}/posts/${post.id}`, post, {
             headers: { 'Content-Type': 'application/json' },
         });
         return res.data;
