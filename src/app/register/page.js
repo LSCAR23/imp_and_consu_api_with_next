@@ -1,12 +1,12 @@
 "use client";
 
-import LoginForm from "@/components/LoginForm";
+import RegisterForm from "@/components/RegisterForm";
 
-export default function HomePage() {
+export default function RegisterPage() {
     return (
         <div className="min-h-screen flex items-center justify-center text-white" style={{ color: 'var(--foreground)', backgroundColor: 'var(--background)' }}>
             <div className="max-w-md w-full p-6">
-                <LoginForm />
+                <RegisterForm></RegisterForm>
             </div>
         </div>
     );
