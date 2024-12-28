@@ -27,7 +27,7 @@ export async function POST(req) {
 
         return new Response(JSON.stringify({ message: 'Verificación exitosa' }), { status: 200 });
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return new Response(JSON.stringify({ error: 'Error al verificar el código' }), { status: 500 });
     }
 }

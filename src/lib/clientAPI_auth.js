@@ -11,7 +11,15 @@ export const registerUser = async (formData) => {
         });
         return response.data;
     } catch (error) {
-        throw error.response ? error.response.data : new Error('Error al registrar el usuario');
+        if (error.response) {
+            const { data, status } = error.response;
+            throw {
+                message: data.error || 'Error desconocido',
+                status,
+            };
+        }
+        
+        throw new Error('Error de conexión al servidor');
     }
 };
 
@@ -33,21 +41,18 @@ export async function loginUser(userName, password) {
 
     } catch (error) {
         if (error.response) {
-            console.error('Error de servidor:', error.response.data.error);
-            alert(error.response.data.error);
+            console.log('Error de servidor:', error.response.data.error);
         } else if (error.request) {
-            console.error('No se pudo contactar con el servidor');
-            alert('No se pudo contactar con el servidor');
+            console.log('No se pudo contactar con el servidor');
         } else {
-            console.error('Error al configurar la solicitud:', error.message);
-            alert('Error al configurar la solicitud');
+            console.log('Error al configurar la solicitud');
         }
     }
 }
 
 export async function verifyTwoFactorCode(userName, code) {
     try {
-        const response = await axios.post('/api/auth/verify-2fa', {
+        const response = await axios.post(`${API_URL}/auth/verify-2fa`, {
             userName,
             code
         }, {
@@ -62,13 +67,13 @@ export async function verifyTwoFactorCode(userName, code) {
 
     } catch (error) {
         if (error.response) {
-            console.error('Error al verificar el código 2FA:', error.response.data.error);
+            console.log('Error al verificar el código 2FA:', error.response.data.error);
             return { message: 'Código 2FA inválido' };
         } else if (error.request) {
-            console.error('No se pudo contactar con el servidor');
+            console.log('No se pudo contactar con el servidor');
             return { message: 'Error de conexión con el servidor' };
         } else {
-            console.error('Error al configurar la solicitud 2FA:', error.message);
+            console.log('Error al configurar la solicitud 2FA:', error.message);
             return { message: 'Error desconocido al verificar 2FA' };
         }
     }

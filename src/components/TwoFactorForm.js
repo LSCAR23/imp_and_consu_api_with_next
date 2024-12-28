@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TwoFactorForm = ({ user, code, setCode, onSubmit }) => {
+const TwoFactorForm = ({ user, code, setCode, onSubmit,message }) => {
     return (
         <div className="max-w-md mx-auto p-6 bg-black rounded-lg text-white">
             <h3 className="text-2xl font-bold text-center mb-6">Verificación en dos pasos</h3>
@@ -24,6 +24,15 @@ const TwoFactorForm = ({ user, code, setCode, onSubmit }) => {
                     Verificar
                 </button>
             </form>
+            {message?.text && (
+                <p
+                    className={`text-sm text-center mt-4 ${
+                        message.isError ? "text-red-500" : "text-gray-400"
+                    }`}
+                >
+                    {message.text}
+                </p>
+            )}
         </div>
     );
 };

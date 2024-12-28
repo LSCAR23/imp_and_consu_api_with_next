@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import { loginUser, verifyTwoFactorCode } from "@/lib/clientAPI_auth";
 import TwoFactorForm from './TwoFactorForm';
 
-export default function LoginForm({ onSuccess, onError }) {
+export default function LoginForm() {
     const [formData, setFormData] = useState({ userName: '', password: '' });
+    const [message, setMessage] = useState({ text: null, isError: false });
     const router = useRouter();
     const [show2FA, setShow2FA] = useState(false);
     const [user, setUser] = useState(null);
@@ -18,25 +19,35 @@ export default function LoginForm({ onSuccess, onError }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const data = await loginUser(formData.userName, formData.password);
+        try {
+            const data = await loginUser(formData.userName, formData.password);
 
-        if (data && data.message === 'Inicio de sesión exitoso') {
-            setUser(formData);
-            setShow2FA(true);
-        } else {
-            alert('Error al iniciar sesión');
+            if (data && data.message === 'Inicio de sesión exitoso') {
+                setUser(formData);
+                setShow2FA(true);
+                setMessage({ text: null, isError: false }); // Limpia mensajes previos
+            } else {
+                setMessage({ text: 'Error al iniciar sesión. Verifica tus credenciales.', isError: true });
+            }
+        } catch (error) {
+            setMessage({ text: error.message || 'Error al iniciar sesión.', isError: true });
         }
     };
 
     const handle2FASubmit = async (e) => {
         e.preventDefault();
 
-        const response = await verifyTwoFactorCode(user.userName, code);
+        try {
+            const response = await verifyTwoFactorCode(user.userName, code);
 
-        if (response && response.message === 'Verificación exitosa') {
-            router.push('/posts');
-        } else {
-            alert('Código 2FA inválido');
+            if (response && response.message === 'Verificación exitosa') {
+                router.push('/posts');
+                setMessage({ text: null, isError: false }); 
+            } else {
+                setMessage({ text: 'Código 2FA inválido.', isError: true });
+            }
+        } catch (error) {
+            setMessage({ text: error.message || 'Error al verificar el código 2FA.', isError: true });
         }
     };
 
@@ -79,6 +90,15 @@ export default function LoginForm({ onSuccess, onError }) {
                             Iniciar Sesión
                         </button>
                     </form>
+                    {message.text && (
+                        <p
+                            className={`text-sm text-center mt-4 ${
+                                message.isError ? 'text-red-500' : 'text-gray-400'
+                            }`}
+                        >
+                            {message.text}
+                        </p>
+                    )}
                     <div className="text-center mt-4">
                         <p className="text-sm text-gray-400">
                             ¿No tienes una cuenta?
@@ -97,6 +117,7 @@ export default function LoginForm({ onSuccess, onError }) {
                     code={code}
                     setCode={setCode}
                     onSubmit={handle2FASubmit}
+                    message={message}
                 />
             )}
         </div>
