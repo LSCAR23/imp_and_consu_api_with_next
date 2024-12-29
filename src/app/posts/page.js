@@ -7,10 +7,9 @@ import EditPostForm from '../../components/EditPostForm';
 import ToastMessage from '../../components/ToastMessage';
 import Pagination from '../../components/Pagination';
 import Spinner from '../../components/Spinner';
-import { fetchPosts, createPost, updatePost, deletePost } from '../../lib/clientAPI_posts';
+import { fetchPosts, createPost, updatePost, deletePost, fetchUserPosts } from '../../lib/clientAPI_posts';
 import SkeletonPosts from '../../components/SkeletonPosts';
 import useUser from '../hooks/useUser';
-
 
 export default function PostsPage() {
     const { user, loading: loadingUser } = useUser();
@@ -34,10 +33,11 @@ export default function PostsPage() {
 
     useEffect(() => {
         const loadPosts = async () => {
+            if (loadingUser || !user) return;
             setLoading(true);
             try {
-                const data = await fetchPosts();
-                setPosts(data); // Cargar todas las publicaciones
+                const userPosts = await fetchUserPosts(user.id);
+                setPosts(userPosts);
             } catch (err) {
                 setToastMessage('Error al cargar las publicaciones');
                 setToastType('error');
@@ -46,7 +46,7 @@ export default function PostsPage() {
             }
         };
         loadPosts();
-    }, []);
+    }, [user, loadingUser]);
 
     const handleCreatePost = async (newPost) => {
         if (loadingUser || !user) {
@@ -110,18 +110,22 @@ export default function PostsPage() {
         }, 300);
     };
 
-
     return (
         <div className="container mx-auto p-4" style={{ color: 'var(--foreground)', backgroundColor: 'var(--background)' }}>
-            <h1 className="text-3xl font-bold mb-6 text-center text-white">Publicaciones</h1>
-            {loadingCreation && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
-                <Spinner label="Publicando nuevo post..." />
-            </div>
-            }
+            <h1 className="text-3xl font-bold mb-6 text-center text-white">
+                {loadingUser ? 'Cargando...' : `Bienvenido ${user?.userName || ''}`}
+            </h1>
+            {loadingCreation && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
+                    <Spinner label="Publicando nuevo post..." />
+                </div>
+            )}
             <CreatePostForm onCreate={handleCreatePost} />
 
             {loading ? (
                 <SkeletonPosts />
+            ) : posts.length === 0 ? (
+                <p className="text-center text-white">No tienes posts publicados aún.</p>
             ) : (
                 <>
                     <PostList
