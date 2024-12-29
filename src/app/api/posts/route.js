@@ -2,12 +2,23 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request) {
     try {
-        const posts = await prisma.post.findMany();
+        const posts = await prisma.post.findMany({
+            include: {
+                user: {
+                    select: { userName: true }, 
+                },
+            },
+        });
+
         return new Response(JSON.stringify(posts), { status: 200 });
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Error al obtener los posts' }), { status: 500 });
+        console.error('Error al obtener los posts:', error);
+        return new Response(
+            JSON.stringify({ error: 'Error interno del servidor' }),
+            { status: 500 }
+        );
     }
 }
 

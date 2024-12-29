@@ -3,9 +3,25 @@ import api from "@/utils/api";
 export async function fetchPosts() {
     try {
         const res = await api.get('/posts');
+        return res.data;
+    } catch (error) {
+        console.error('Error al cargar los posts:', error);
+        throw new Error('Error al cargar los posts');
+    }
+}
+
+export async function fetchUserPosts(userId) {
+    try {
+        const res = await api.get('/posts/user', {
+            headers: {
+                'user-id': userId,
+            },
+        });
+
         console.log(res.data);
         return res.data;
     } catch (error) {
+        console.log('Error al cargar las publicaciones:', error);
         throw new Error('Error al cargar las publicaciones');
     }
 }

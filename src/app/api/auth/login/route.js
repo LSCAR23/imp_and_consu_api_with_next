@@ -7,8 +7,6 @@ const prisma = new PrismaClient();
 export async function POST(req) {
     try {
         const { userName, password } = await req.json();
-        console.log(userName);
-        console.log(password);
         const user = await prisma.user.findUnique({
             where: { userName },
         });
@@ -24,7 +22,7 @@ export async function POST(req) {
         }
 
         const token = jwt.sign(
-            { id: user.id, userName: user.userName },
+            { id: user.id},
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );

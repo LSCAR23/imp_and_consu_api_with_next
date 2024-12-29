@@ -19,7 +19,7 @@ export async function GET(req) {
         if (!user) {
             return new Response(JSON.stringify({ error: 'Usuario no encontrado' }), { status: 404 });
         }
-
+        console.log(user);
         return new Response(JSON.stringify({ id: user.id, userName: user.userName }), { status: 200 });
     } catch (error) {
         console.error('Error al verificar el token:', error);
