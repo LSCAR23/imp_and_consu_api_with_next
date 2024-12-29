@@ -1,10 +1,22 @@
-"use client";
+'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { logoutUser } from '@/lib/clientAPI_auth';
 
 export default function PostLayout({ children }) {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            console.log('Sesión cerrada exitosamente');
+            router.push('/');
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error.message);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black text-white">
@@ -21,6 +33,12 @@ export default function PostLayout({ children }) {
                         </a>
                     </Link>
                 </div>
+                <button
+                    onClick={handleLogout}
+                    className="ml-6 px-4 py-2 bg-violet-500 text-white rounded-md hover:bg-violet-600 transition duration-300"
+                >
+                    Cerrar Sesión
+                </button>
             </nav>
             <main className="p-6">{children}</main>
         </div>

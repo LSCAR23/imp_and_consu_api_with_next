@@ -23,6 +23,28 @@ export const registerUser = async (formData) => {
     }
 };
 
+export const logoutUser = async () => {
+    try {
+        const response = await axios.post(`${API_URL}/auth/logout`, {}, {
+            withCredentials: true, // Asegura el envío de cookies
+        });
+
+        console.log('Sesión cerrada exitosamente:', response.data.message);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error al cerrar la sesión:', error.response.data.message);
+            throw new Error(error.response.data.message || 'Error desconocido');
+        } else if (error.request) {
+            console.error('No se pudo contactar con el servidor');
+            throw new Error('Error de conexión con el servidor');
+        } else {
+            console.error('Error al configurar la solicitud:', error.message);
+            throw new Error('Error desconocido al cerrar la sesión');
+        }
+    }
+};
+
 export async function loginUser(userName, password) {
     try {
         const response = await axios.post(`${API_URL}/auth/login`, {
